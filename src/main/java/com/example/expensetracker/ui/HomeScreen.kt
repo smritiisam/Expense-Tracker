@@ -10,7 +10,10 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun HomeScreen(
-    viewModel: HomeViewModel
+    viewModel: HomeViewModel,
+    onPayClick: () -> Unit
+
+
 ) {
 
     Column(
@@ -50,9 +53,7 @@ fun HomeScreen(
         Spacer(modifier = Modifier.height(16.dp))
 
         Button(
-            onClick = {
-                viewModel.validateAmount()
-            },
+            onClick = onPayClick,
             modifier = Modifier.fillMaxWidth()
         ) {
             Text("Pay via UPI")

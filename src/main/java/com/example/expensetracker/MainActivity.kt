@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
+import com.example.expensetracker.payment.PaymentController
 import com.example.expensetracker.ui.HomeScreen
 import com.example.expensetracker.ui.HomeViewModel
 
@@ -14,9 +15,17 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        val paymentController = PaymentController(this)
+
         setContent {
+
             HomeScreen(
-                viewModel = viewModel
+                viewModel = viewModel,
+                onPayClick = {
+                    viewModel.payViaUpi(
+                        paymentController
+                    )
+                }
             )
         }
     }

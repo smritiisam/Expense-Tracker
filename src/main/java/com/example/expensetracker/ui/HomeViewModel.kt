@@ -4,6 +4,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import com.example.expensetracker.payment.PaymentController
 
 class HomeViewModel : ViewModel() {
 
@@ -18,16 +19,23 @@ class HomeViewModel : ViewModel() {
         errorMessage = null
     }
 
-    fun validateAmount(): Boolean {
+    fun payViaUpi(
+        paymentController: PaymentController
+    ) {
 
         val value = amount.toDoubleOrNull()
 
-        return if (value == null || value <= 0) {
+        if (value == null || value <= 0) {
             errorMessage = "Enter an amount greater than ₹0"
-            false
-        } else {
-            errorMessage = null
-            true
+            return
+        }
+
+        val launched = paymentController.launchUpiPayment(
+            amount = amount
+        )
+
+        if (!launched) {
+            errorMessage = "No compatible UPI app found"
         }
     }
 }
