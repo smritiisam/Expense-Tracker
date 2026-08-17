@@ -10,12 +10,15 @@ import com.example.expense_tracker.payment.UpiApp
 class HomeViewModel : ViewModel() {
 
     data class ExpenseCategory(
+        val id: Int,
         val name: String,
-        val amount: Double
+        val assignedAmount: Double,
+        val remainingAmount: Double
     )
 
     var categories by mutableStateOf<List<ExpenseCategory>>(emptyList())
         private set
+
     var amount by mutableStateOf("")
         private set
 
@@ -28,6 +31,8 @@ class HomeViewModel : ViewModel() {
     var showUpiChooser by mutableStateOf(false)
         private set
 
+    private var nextCategoryId = 1
+
 
     fun addCategory(
         name: String,
@@ -36,19 +41,64 @@ class HomeViewModel : ViewModel() {
 
         val amountValue = amount.toDoubleOrNull()
 
-        if (name.isBlank() || amountValue == null || amountValue <= 0) {
+        if (
+            name.isBlank() ||
+            amountValue == null ||
+            amountValue <= 0
+        ) {
             return false
         }
 
         val category = ExpenseCategory(
+            id = nextCategoryId++,
             name = name.trim(),
-            amount = amountValue
+            assignedAmount = amountValue,
+            remainingAmount = amountValue
         )
 
         categories = categories + category
 
         return true
     }
+
+
+    fun debitCategory(
+        categoryId: Int,
+        debitAmount: String
+    ): String? {
+
+        val debitValue = debitAmount.toDoubleOrNull()
+
+        if (debitValue == null || debitValue <= 0) {
+            return "Enter a valid debit amount"
+        }
+
+        val category = categories.find {
+            it.id == categoryId
+        } ?: return "Category not found"
+
+        if (debitValue > category.remainingAmount) {
+            return "Debit exceeds remaining amount"
+        }
+
+        categories = categories.map { currentCategory ->
+
+            if (currentCategory.id == categoryId) {
+
+                currentCategory.copy(
+                    remainingAmount =
+                        currentCategory.remainingAmount - debitValue
+                )
+
+            } else {
+                currentCategory
+            }
+        }
+
+        return null
+    }
+
+
     fun onAmountChanged(newAmount: String) {
         amount = newAmount
         errorMessage = null
@@ -62,20 +112,19 @@ class HomeViewModel : ViewModel() {
         val value = amount.toDoubleOrNull()
 
         if (value == null || value <= 0) {
-            errorMessage = "Enter an amount greater than ₹0"
+            errorMessage =
+                "Enter an amount greater than ₹0"
             return
         }
-
 
         installedUpiApps =
             paymentController.getInstalledUpiApps()
 
-
         if (installedUpiApps.isEmpty()) {
-            errorMessage = "No supported UPI app found"
+            errorMessage =
+                "No supported UPI app found"
             return
         }
-
 
         showUpiChooser = true
     }
@@ -99,7 +148,8 @@ class HomeViewModel : ViewModel() {
             )
 
         if (!opened) {
-            errorMessage = "Unable to open ${app.name}"
+            errorMessage =
+                "Unable to open ${app.name}"
         }
     }
 }

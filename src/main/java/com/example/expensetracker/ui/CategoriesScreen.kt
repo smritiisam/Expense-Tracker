@@ -74,6 +74,14 @@ fun CategoriesScreen(
 
                     items(viewModel.categories) { category ->
 
+                        var debitAmount by remember(category.id) {
+                            mutableStateOf(viewModel.amount)
+                        }
+
+                        var debitError by remember(category.id) {
+                            mutableStateOf<String?>(null)
+                        }
+
                         Card(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -89,9 +97,85 @@ fun CategoriesScreen(
                                     style = MaterialTheme.typography.titleMedium
                                 )
 
-                                Text(
-                                    text = "₹${category.amount}"
+                                Spacer(
+                                    modifier = Modifier.height(8.dp)
                                 )
+
+                                Text(
+                                    text = "Assigned: ₹${category.assignedAmount}"
+                                )
+
+                                Text(
+                                    text = "Remaining: ₹${category.remainingAmount}"
+                                )
+
+                                Spacer(
+                                    modifier = Modifier.height(16.dp)
+                                )
+
+                                OutlinedTextField(
+                                    value = debitAmount,
+
+                                    onValueChange = {
+                                        debitAmount = it
+                                        debitError = null
+                                    },
+
+                                    label = {
+                                        Text("Debit amount")
+                                    },
+
+                                    prefix = {
+                                        Text("₹")
+                                    },
+
+                                    keyboardOptions = KeyboardOptions(
+                                        keyboardType = KeyboardType.Decimal
+                                    ),
+
+                                    modifier = Modifier.fillMaxWidth()
+                                )
+
+                                debitError?.let { error ->
+
+                                    Spacer(
+                                        modifier = Modifier.height(6.dp)
+                                    )
+
+                                    Text(
+                                        text = error,
+                                        color = MaterialTheme.colorScheme.error
+                                    )
+                                }
+
+                                Spacer(
+                                    modifier = Modifier.height(10.dp)
+                                )
+
+                                Button(
+                                    onClick = {
+
+                                        val error =
+                                            viewModel.debitCategory(
+                                                categoryId = category.id,
+                                                debitAmount = debitAmount
+                                            )
+
+                                        if (error == null) {
+
+                                            debitAmount = ""
+
+                                        } else {
+
+                                            debitError = error
+                                        }
+                                    },
+
+                                    modifier = Modifier.fillMaxWidth()
+                                ) {
+
+                                    Text("DEBIT")
+                                }
                             }
                         }
                     }
