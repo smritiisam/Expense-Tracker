@@ -12,6 +12,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -26,7 +27,8 @@ import com.example.expense_tracker.payment.UpiApp
 fun HomeScreen(
     viewModel: HomeViewModel,
     onPayClick: () -> Unit,
-    onUpiAppSelected: (UpiApp) -> Unit
+    onUpiAppSelected: (UpiApp) -> Unit,
+    onCategoriesClick: () -> Unit
 ) {
 
     Column(
@@ -101,6 +103,16 @@ fun HomeScreen(
         ) {
 
             Text("Pay via UPI")
+        }
+        Spacer(
+            modifier = Modifier.height(12.dp)
+        )
+
+        OutlinedButton(
+            onClick = onCategoriesClick,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text("CATEGORIES")
         }
     }
 

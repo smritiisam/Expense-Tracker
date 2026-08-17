@@ -9,6 +9,13 @@ import com.example.expense_tracker.payment.UpiApp
 
 class HomeViewModel : ViewModel() {
 
+    data class ExpenseCategory(
+        val name: String,
+        val amount: Double
+    )
+
+    var categories by mutableStateOf<List<ExpenseCategory>>(emptyList())
+        private set
     var amount by mutableStateOf("")
         private set
 
@@ -22,6 +29,26 @@ class HomeViewModel : ViewModel() {
         private set
 
 
+    fun addCategory(
+        name: String,
+        amount: String
+    ): Boolean {
+
+        val amountValue = amount.toDoubleOrNull()
+
+        if (name.isBlank() || amountValue == null || amountValue <= 0) {
+            return false
+        }
+
+        val category = ExpenseCategory(
+            name = name.trim(),
+            amount = amountValue
+        )
+
+        categories = categories + category
+
+        return true
+    }
     fun onAmountChanged(newAmount: String) {
         amount = newAmount
         errorMessage = null
