@@ -1,39 +1,60 @@
-package com.example.expensetracker.payment
+package com.example.expense_tracker.payment
 
-import android.content.ActivityNotFoundException
 import android.content.Context
-import android.content.Intent
-import android.net.Uri
+
+data class UpiApp(
+    val name: String,
+    val packageName: String
+)
 
 class PaymentController(
     private val context: Context
 ) {
 
-    fun launchUpiPayment(amount: String): Boolean {
-
-        val upiUri = Uri.Builder()
-            .scheme("upi")
-            .authority("pay")
-            .appendQueryParameter("pa", "your-vpa@bank")
-            .appendQueryParameter("pn", "Expense Tracker")
-            .appendQueryParameter("am", amount)
-            .appendQueryParameter("cu", "INR")
-            .build()
-
-        val upiIntent = Intent(
-            Intent.ACTION_VIEW,
-            upiUri
+    private val supportedUpiApps = listOf(
+        UpiApp(
+            name = "Google Pay",
+            packageName = "com.google.android.apps.nbu.paisa.user"
+        ),
+        UpiApp(
+            name = "PhonePe",
+            packageName = "com.phonepe.app"
+        ),
+        UpiApp(
+            name = "Paytm",
+            packageName = "net.one97.paytm"
+        ),
+        UpiApp(
+            name = "BHIM",
+            packageName = "in.org.npci.upiapp"
         )
+    )
 
-        val chooser = Intent.createChooser(
-            upiIntent,
-            "Pay with"
-        )
+    fun getInstalledUpiApps(): List<UpiApp> {
 
-        return try {
-            context.startActivity(chooser)
+        val packageManager = context.packageManager
+
+        return supportedUpiApps.filter { app ->
+
+            packageManager.getLaunchIntentForPackage(
+                app.packageName
+            ) != null
+        }
+    }
+
+    fun openUpiApp(packageName: String): Boolean {
+
+        val launchIntent = context.packageManager
+            .getLaunchIntentForPackage(packageName)
+
+        return if (launchIntent != null) {
+
+            context.startActivity(launchIntent)
+
             true
-        } catch (e: ActivityNotFoundException) {
+
+        } else {
+
             false
         }
     }
