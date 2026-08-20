@@ -1,29 +1,38 @@
-package com.example.expense_tracker
+package com.samm.expense_tracker
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
-import com.example.expense_tracker.payment.PaymentController
-import com.example.expense_tracker.ui.HomeScreen
-import com.example.expense_tracker.ui.HomeViewModel
-import com.example.expense_tracker.ui.theme.ExpenseTrackerTheme
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import com.example.expense_tracker.ui.CategoriesScreen
+import com.samm.expense_tracker.auth.AuthViewModel
+import com.samm.expense_tracker.auth.LoginScreen
+import com.samm.expense_tracker.payment.PaymentController
+import com.samm.expense_tracker.ui.CategoriesScreen
+import com.samm.expense_tracker.ui.HomeScreen
+import com.samm.expense_tracker.ui.HomeViewModel
+import com.samm.expense_tracker.ui.theme.ExpenseTrackerTheme
+
 class MainActivity : ComponentActivity() {
 
-    private val viewModel:
+    private val homeViewModel:
             HomeViewModel by viewModels()
+
+    private val authViewModel:
+            AuthViewModel by viewModels()
 
 
     override fun onCreate(
         savedInstanceState: Bundle?
     ) {
 
-        super.onCreate(savedInstanceState)
+        super.onCreate(
+            savedInstanceState
+        )
 
 
         val paymentController =
@@ -33,44 +42,95 @@ class MainActivity : ComponentActivity() {
         setContent {
 
             ExpenseTrackerTheme {
-                var showCategories by remember {
-                    mutableStateOf(false)
-                }
-                if (showCategories) {
 
-                    CategoriesScreen(
-                        viewModel = viewModel,
-                        onBack = {
-                            showCategories = false
+                if (
+                    !authViewModel.isLoggedIn
+                ) {
+
+                    LoginScreen(
+
+                        viewModel =
+                            authViewModel,
+
+                        onSendOtp = {
+
+                            authViewModel
+                                .sendOtp(this)
+                        },
+
+                        onVerifyOtp = {
+
+                            authViewModel
+                                .verifyOtp()
                         }
                     )
 
                 } else {
 
-                    HomeScreen(
+                    LaunchedEffect(
+                        authViewModel
+                            .isLoggedIn
+                    ) {
 
-                        viewModel = viewModel,
+                        homeViewModel
+                            .loadCategoriesForCurrentUser()
+                    }
 
 
-                        onPayClick = {
+                    var showCategories
+                            by remember {
+                                mutableStateOf(false)
+                            }
 
-                            viewModel.onPayClicked(
-                                paymentController
-                            )
-                        },
-                        onCategoriesClick = {
-                            showCategories = true
-                        },
 
-                        onUpiAppSelected = { app ->
+                    if (showCategories) {
 
-                            viewModel.selectUpiApp(
-                                app = app,
-                                paymentController =
-                                    paymentController
-                            )
-                        }
-                    )
+                        CategoriesScreen(
+
+                            viewModel =
+                                homeViewModel,
+
+                            onBack = {
+
+                                showCategories =
+                                    false
+                            }
+                        )
+
+                    } else {
+
+                        HomeScreen(
+
+                            viewModel =
+                                homeViewModel,
+
+                            onPayClick = {
+
+                                homeViewModel
+                                    .onPayClicked(
+                                        paymentController
+                                    )
+                            },
+
+                            onCategoriesClick = {
+
+                                showCategories =
+                                    true
+                            },
+
+                            onUpiAppSelected = {
+                                    app ->
+
+                                homeViewModel
+                                    .selectUpiApp(
+                                        app = app,
+
+                                        paymentController =
+                                            paymentController
+                                    )
+                            }
+                        )
+                    }
                 }
             }
         }

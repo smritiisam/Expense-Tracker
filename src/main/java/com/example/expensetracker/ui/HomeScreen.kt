@@ -1,26 +1,23 @@
-package com.example.expense_tracker.ui
+package com.samm.expense_tracker.ui
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import com.example.expense_tracker.payment.UpiApp
+import androidx.compose.ui.unit.sp
+import com.samm.expense_tracker.payment.UpiApp
+import com.samm.expense_tracker.ui.theme.*
 
 
 @Composable
@@ -31,121 +28,391 @@ fun HomeScreen(
     onCategoriesClick: () -> Unit
 ) {
 
-    Column(
+    Box(
         modifier = Modifier
             .fillMaxSize()
-            .padding(24.dp),
-
-        verticalArrangement = Arrangement.Center
+            .background(
+                brush = Brush.verticalGradient(
+                    colors = listOf(
+                        PremiumNavy,
+                        PremiumNavyLight
+                    )
+                )
+            )
     ) {
 
-        Text(
-            text = "Expense Tracker",
-            style = MaterialTheme.typography.headlineMedium
-        )
-
-
-        Spacer(
-            modifier = Modifier.height(24.dp)
-        )
-
-
-        OutlinedTextField(
-            value = viewModel.amount,
-
-            onValueChange =
-                viewModel::onAmountChanged,
-
-            label = {
-                Text("Amount")
-            },
-
-            prefix = {
-                Text("₹")
-            },
-
-            keyboardOptions =
-                KeyboardOptions(
-                    keyboardType =
-                        KeyboardType.Decimal
-                ),
-
-            modifier =
-                Modifier.fillMaxWidth()
-        )
-
-
-        viewModel.errorMessage?.let { message ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(
+                    horizontal = 24.dp
+                )
+        ) {
 
             Spacer(
                 modifier =
-                    Modifier.height(8.dp)
+                    Modifier.height(70.dp)
             )
+
+
+            // Premium wallet-style icon
+
+            Box(
+                modifier = Modifier
+                    .size(72.dp)
+                    .clip(CircleShape)
+                    .background(Emerald),
+
+                contentAlignment =
+                    Alignment.Center
+            ) {
+
+                Text(
+                    text = "₹",
+
+                    fontSize = 34.sp,
+
+                    fontWeight =
+                        FontWeight.Bold,
+
+                    color = PremiumNavy
+                )
+            }
+
+
+            Spacer(
+                modifier =
+                    Modifier.height(26.dp)
+            )
+
 
             Text(
-                text = message,
-                color =
+                text = "Expense Tracker",
+
+                style =
                     MaterialTheme
-                        .colorScheme
-                        .error
+                        .typography
+                        .headlineLarge,
+
+                fontWeight =
+                    FontWeight.Bold,
+
+                color = PremiumWhite
             )
-        }
 
 
-        Spacer(
-            modifier = Modifier.height(16.dp)
-        )
+            Spacer(
+                modifier =
+                    Modifier.height(6.dp)
+            )
 
 
-        Button(
-            onClick = onPayClick,
-            modifier = Modifier.fillMaxWidth()
-        ) {
+            Text(
+                text =
+                    "Pay smarter. Know where your money goes.",
 
-            Text("Pay via UPI")
-        }
-        Spacer(
-            modifier = Modifier.height(12.dp)
-        )
+                style =
+                    MaterialTheme
+                        .typography
+                        .bodyLarge,
 
-        OutlinedButton(
-            onClick = onCategoriesClick,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Text("CATEGORIES")
+                color = PremiumGray
+            )
+
+
+            Spacer(
+                modifier =
+                    Modifier.height(38.dp)
+            )
+
+
+            // Amount Card
+
+            Card(
+
+                modifier =
+                    Modifier.fillMaxWidth(),
+
+                shape =
+                    RoundedCornerShape(28.dp),
+
+                colors =
+                    CardDefaults.cardColors(
+                        containerColor =
+                            CardDark
+                    ),
+
+                elevation =
+                    CardDefaults.cardElevation(
+                        defaultElevation = 8.dp
+                    )
+            ) {
+
+                Column(
+                    modifier =
+                        Modifier.padding(22.dp)
+                ) {
+
+                    Text(
+                        text =
+                            "PAYMENT AMOUNT",
+
+                        color = PremiumGray,
+
+                        fontSize = 12.sp,
+
+                        fontWeight =
+                            FontWeight.SemiBold
+                    )
+
+
+                    Spacer(
+                        modifier =
+                            Modifier.height(12.dp)
+                    )
+
+
+                    OutlinedTextField(
+
+                        value =
+                            viewModel.amount,
+
+                        onValueChange =
+                            viewModel::onAmountChanged,
+
+                        label = {
+                            Text(
+                                "Enter amount"
+                            )
+                        },
+
+                        prefix = {
+
+                            Text(
+                                text = "₹ ",
+                                color = Emerald,
+                                fontWeight =
+                                    FontWeight.Bold
+                            )
+                        },
+
+                        keyboardOptions =
+                            KeyboardOptions(
+                                keyboardType =
+                                    KeyboardType.Decimal
+                            ),
+
+                        singleLine = true,
+
+                        shape =
+                            RoundedCornerShape(
+                                16.dp
+                            ),
+
+                        modifier =
+                            Modifier.fillMaxWidth()
+                    )
+
+
+                    viewModel
+                        .errorMessage
+                        ?.let { message ->
+
+                            Spacer(
+                                modifier =
+                                    Modifier.height(
+                                        10.dp
+                                    )
+                            )
+
+                            Text(
+                                text = message,
+                                color = ErrorRed,
+                                fontSize = 13.sp
+                            )
+                        }
+
+
+                    Spacer(
+                        modifier =
+                            Modifier.height(20.dp)
+                    )
+
+
+                    Button(
+
+                        onClick =
+                            onPayClick,
+
+                        shape =
+                            RoundedCornerShape(
+                                16.dp
+                            ),
+
+                        colors =
+                            ButtonDefaults
+                                .buttonColors(
+                                    containerColor =
+                                        Emerald,
+
+                                    contentColor =
+                                        PremiumNavy
+                                ),
+
+                        modifier =
+                            Modifier
+                                .fillMaxWidth()
+                                .height(56.dp)
+                    ) {
+
+                        Text(
+                            text = "PAY VIA UPI",
+
+                            fontWeight =
+                                FontWeight.Bold,
+
+                            fontSize = 16.sp
+                        )
+                    }
+
+
+                    Spacer(
+                        modifier =
+                            Modifier.height(12.dp)
+                    )
+
+
+                    OutlinedButton(
+
+                        onClick =
+                            onCategoriesClick,
+
+                        shape =
+                            RoundedCornerShape(
+                                16.dp
+                            ),
+
+                        colors =
+                            ButtonDefaults
+                                .outlinedButtonColors(
+                                    contentColor =
+                                        Gold
+                                ),
+
+                        modifier =
+                            Modifier
+                                .fillMaxWidth()
+                                .height(54.dp)
+                    ) {
+
+                        Text(
+                            text =
+                                "VIEW CATEGORIES",
+
+                            fontWeight =
+                                FontWeight.SemiBold
+                        )
+                    }
+                }
+            }
+
+
+            Spacer(
+                modifier =
+                    Modifier.height(24.dp)
+            )
+
+
+            Text(
+                text =
+                    "Budget • Track • Stay in control",
+
+                color = PremiumGray,
+
+                fontSize = 13.sp,
+
+                modifier =
+                    Modifier.align(
+                        Alignment.CenterHorizontally
+                    )
+            )
         }
     }
 
 
-    if (viewModel.showUpiChooser) {
+    // Existing UPI chooser
+
+    if (
+        viewModel.showUpiChooser
+    ) {
 
         AlertDialog(
 
             onDismissRequest = {
-                viewModel.dismissUpiChooser()
+                viewModel
+                    .dismissUpiChooser()
             },
 
+            containerColor =
+                CardDark,
+
             title = {
-                Text("Choose UPI App")
+
+                Text(
+                    text =
+                        "Choose UPI App",
+
+                    color =
+                        PremiumWhite
+                )
             },
 
             text = {
 
                 Column {
 
-                    viewModel.installedUpiApps
+                    viewModel
+                        .installedUpiApps
                         .forEach { app ->
 
-                            Text(
-                                text = app.name,
+                            Card(
 
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .clickable {
-                                        onUpiAppSelected(app)
-                                    }
-                                    .padding(16.dp)
-                            )
+                                modifier =
+                                    Modifier
+                                        .fillMaxWidth()
+                                        .padding(
+                                            vertical =
+                                                4.dp
+                                        )
+                                        .clickable {
+
+                                            onUpiAppSelected(
+                                                app
+                                            )
+                                        },
+
+                                colors =
+                                    CardDefaults
+                                        .cardColors(
+                                            containerColor =
+                                                CardDarkSecondary
+                                        )
+                            ) {
+
+                                Text(
+                                    text =
+                                        app.name,
+
+                                    color =
+                                        PremiumWhite,
+
+                                    modifier =
+                                        Modifier
+                                            .padding(
+                                                18.dp
+                                            )
+                                )
+                            }
                         }
                 }
             },
@@ -161,7 +428,10 @@ fun HomeScreen(
                     }
                 ) {
 
-                    Text("Cancel")
+                    Text(
+                        "Cancel",
+                        color = Emerald
+                    )
                 }
             }
         )
